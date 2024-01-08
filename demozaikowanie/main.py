@@ -2,7 +2,7 @@ import numpy as np
 from skimage import io
 from matplotlib import pyplot as plt
 
-image = io.imread(r"E:\programowanie\PycharmProjects\SiOC\demozaikowanie\CFA_BIN\CFA\Bayer\namib.jpg")
+image = np.load("E:\programowanie\PycharmProjects\SiOC\demozaikowanie\CFA_NPY\Bayer\pandas.npy")
 image.shape
 
 image[:4, :4, 1]
@@ -16,7 +16,7 @@ green = image[:, :, 1]
 red = image[:, :, 0]
 blue = image[:, :, 2]
 
-plt.imshow(image)
+plt.imshow(green)
 plt.show()
 
 np.arange(10)[1::2]
@@ -40,14 +40,16 @@ to_interp.shape
 
 def linear_kernel(x, offset: float, width: float):
     """Linear interpolation kernel"""
+    # x = x - offset
+    # x = x / width
     return (1 - np.abs((x - offset) / width)) * (np.abs((x - offset) / width) < 1)
 
 x = np.linspace(-3, 3, 1000)
 y = linear_kernel(x, offset=0.0, width=1)
 
 plt.plot(x, y)
-plt.show()
 
+#%%
 to_interp[0].shape
 
 
@@ -61,7 +63,6 @@ def interpolate_row(row):
         kernels.append(y * kernel)
 
     return space, np.sum(np.asarray(kernels), axis=0)
-
 
 iterpolated = []
 
@@ -81,12 +82,10 @@ for column in iterpolated.T:
     iterpolated2.append(i)
 
 iterpolated2 = np.asarray(iterpolated2).T
-
 plt.imshow(iterpolated2)
 plt.show()
 
 result_green = iterpolated2
-
 red[::2].shape
 
 red_row_inter = []
@@ -99,6 +98,8 @@ red_row_inter.shape
 
 red_col_inter = []
 for col in red_row_inter.T:
+    # print(col)
+    # break
     _, i = interpolate_row(col)
     red_col_inter.append(i)
 
@@ -106,7 +107,6 @@ red_col_inter = np.asarray(red_col_inter)
 red_col_inter.T.shape
 
 result_red = red_col_inter
-
 blue_row_inter = []
 for row in blue[1::2]:
     _, i = interpolate_row(row[::2])
@@ -117,6 +117,8 @@ blue_row_inter.shape
 
 blue_col_inter = []
 for col in blue_row_inter.T:
+    # print(col)
+    # break
     _, i = interpolate_row(col)
     blue_col_inter.append(i)
 
@@ -124,10 +126,8 @@ blue_col_inter = np.asarray(blue_col_inter)
 blue_col_inter.T.shape
 
 result_blue = blue_col_inter
-
 result_red.shape, result_green.T.shape, result_blue.shape
 
 result_image = np.dstack([result_red.T, result_green, result_blue.T])
-
 plt.imshow(result_image)
 plt.show()
